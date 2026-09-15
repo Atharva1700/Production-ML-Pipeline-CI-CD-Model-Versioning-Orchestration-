@@ -1,0 +1,53 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install pytest scikit-learn mlflow
+      
+      - name: Run unit tests
+        run: pytest tests/ -v
+      
+      - name: Train model
+        run: python -m pipeline.train
+      
+      - name: Evaluate model gate
+        run: python -m pipeline.evaluate
+      
+      - name: Run inference
+        run: python -m pipeline.inference
+  
+  build-docker:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Build Docker image
+        run: |
+          docker build -t ml-pipeline:latest -t ml-pipeline:${{ github.sha }} .
+          echo "Docker image built successfully"
+      
+      - name: Push image (example, configure with your registry)
+        run: echo "Push to registry here"

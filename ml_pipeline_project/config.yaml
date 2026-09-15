@@ -1,0 +1,24 @@
+mlflow:
+  tracking_uri: http://localhost:5000
+  experiment_name: iris-classifier
+
+model:
+  type: RandomForestClassifier
+  params:
+    n_estimators: 100
+    max_depth: 10
+    random_state: 42
+
+evaluation:
+  metrics_threshold:
+    accuracy: 0.90
+    f1_score: 0.88
+
+training:
+  test_split: 0.2
+  random_state: 42
+
+airflow:
+  schedule_interval: "0 2 * * *"
+  retries: 2
+  retry_delay_minutes: 5

@@ -1,0 +1,15 @@
+models/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.env
+mlruns/
+.airflow/
+*.pkl
+*.joblib
+*.log
+.DS_Store
+venv/
